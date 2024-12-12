@@ -5,7 +5,6 @@ const HomeScreen = () => {
     <nav>
       <h1>Home</h1>
      </nav>
-     <Outlet/>
      </>
   );
 };

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,11 +12,18 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import { Link } from 'react-router';
 import { Avatar, Menu, ThemeProvider, createTheme } from '@mui/material';
-
-const navItems = [{text:'Home', path:'/'}, {text:'Training Plan', path:'plan'}, {text:'Contingency', path:'contingency'}, {text:'About', path:'about'}, {text:'Contact',path:'contact'}];
+import HouseOutlinedIcon from '@mui/icons-material/HouseOutlined';
+import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
+import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import MailOutlinedIcon from '@mui/icons-material/MailOutlined';
+const navItems = [{text:'Home', path:'/', icon: <HouseOutlinedIcon/>},
+   {text:'Training Plan', path:'plan', icon: <MenuBookOutlinedIcon/>}, 
+   {text:'Contingency', path:'contingency', icon: <AttachMoneyOutlinedIcon/>}, 
+   {text:'About', path:'about', icon: <InfoOutlinedIcon/>}, 
+   {text:'Contact',path:'contact', icon: <MailOutlinedIcon/>}];
 const accountItems = [{text:'Profile', path:'profile'}, {text:'My Account', path:'account'}, {text:'Logout',path:'/'}];
 const theme = createTheme({
     palette: {
@@ -34,7 +40,7 @@ function TopBar() {
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [accountOpen, setAccountOpen] = React.useState(false);
     const [menuPos, setMenuPos] = React.useState(null);
-
+    document.body.style = 'background-image: #FFFFFF;'
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
       };
@@ -52,8 +58,9 @@ function TopBar() {
           <List>
             {navItems.map((item) => (
               <ListItem key={item} disablePadding>
-                <ListItemButton component={Link} to={item.path} sx={{ textAlign: 'center' }}>
-                  <ListItemText primary={item.text} />
+                <ListItemButton component={Link} to={item.path}>
+                  {item.icon}
+                  <ListItemText primary={item.text} sx={{paddingLeft:'5%'}}/>
                 </ListItemButton>
               </ListItem>
             ))}
@@ -93,7 +100,7 @@ function TopBar() {
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' },paddingLeft:'2%' }}
           >
             Train
           </Typography>
