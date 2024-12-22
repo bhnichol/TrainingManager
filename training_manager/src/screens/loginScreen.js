@@ -6,6 +6,8 @@ import { AppTheme } from '../theme';
 import {useLocation, useNavigate } from 'react-router-dom';
 import axios from '../api/axios'
 import useAuth from '../hooks/useAuth';
+import useInput from '../hooks/useInput';
+import useToggle from '../hooks/useToggle';
 const LOGIN_URL = '/auth'
 
 const LoginScreen = () => {
@@ -13,9 +15,10 @@ const LoginScreen = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname || '/';
-    const [email, setEmail] = React.useState('');
+    const [email, resetEmail, EmailAttribs] = useInput('email', '')
     const [pwd, setPwd] = React.useState('');
     const [error, setError] = React.useState('');
+    const [check, toggleCheck] = useToggle('persist', false);
     document.body.style = 'background-image: radial-gradient(#FA7083,#FA7070);'
 
     React.useEffect(() => {
@@ -32,11 +35,10 @@ const LoginScreen = () => {
                     withCredentials: true
                 });
             const accessToken = response?.data?.accessToken;
-            const roles = response?.data?.roles;
             console.log(response?.data)
-            setAuth({ email, pwd, roles, accessToken });
+            setAuth({ email, accessToken });
             setPwd('');
-            setEmail('');
+            resetEmail();
             setError('');
             navigate(from, {replace: true});
         } catch (err) {
@@ -45,7 +47,7 @@ const LoginScreen = () => {
             } else if (err.response?.status === 400) {
                 setError('Missing Email or Password');
             } else if (err.response?.status === 401) {
-                setError('Unauthorized');
+                setError('Incorrect Email or Password');
             } else {
                 setError('Login Failed');
             }
@@ -64,7 +66,7 @@ const LoginScreen = () => {
                         onSubmit={HandleSubmit}
                         noValidate
                         sx={{ minHeight: '100vh' }}>
-                        <Paper sx={{ width: '29%', margin: '20px auto' }} alignSelf='center' elevation={10}>
+                        <Paper sx={{ width: '29%', margin: '20px auto' }} elevation={10}>
                             <Typography
                                 component="h1"
                                 variant="h4"
@@ -101,7 +103,7 @@ const LoginScreen = () => {
                                         fullWidth
                                         variant="outlined"
                                         size='small'
-                                        onChange={(e) => setEmail(e.target.value)}
+                                        {...EmailAttribs}
                                     />
                                 </FormControl>
                                 <FormControl sx={{ paddingLeft: '5%', paddingRight: '5%' }}>
@@ -122,7 +124,7 @@ const LoginScreen = () => {
                                     />
                                 </FormControl>
                                 <FormControlLabel
-                                    control={<Checkbox value="remember" color="primary" />}
+                                    control={<Checkbox value="remember" color="primary" onChange={toggleCheck} checked={check} />}
                                     label="Remember me"
                                     sx={{ paddingLeft: '5%' }}
                                 />

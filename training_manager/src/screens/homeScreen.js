@@ -1,10 +1,10 @@
-import { Outlet } from "react-router";
+
 const HomeScreen = () => {
   return (
     <>
-    <nav>
+    <div>
       <h1>Home</h1>
-     </nav>
+     </div>
      </>
   );
 };

@@ -12,108 +12,123 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { Avatar, Menu, ThemeProvider, createTheme } from '@mui/material';
 import HouseOutlinedIcon from '@mui/icons-material/HouseOutlined';
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import MailOutlinedIcon from '@mui/icons-material/MailOutlined';
-const navItems = [{text:'Home', path:'/', icon: <HouseOutlinedIcon/>},
-   {text:'Training Plan', path:'plan', icon: <MenuBookOutlinedIcon/>}, 
-   {text:'Contingency', path:'contingency', icon: <AttachMoneyOutlinedIcon/>}, 
-   {text:'About', path:'about', icon: <InfoOutlinedIcon/>}, 
-   {text:'Contact',path:'contact', icon: <MailOutlinedIcon/>}];
-const accountItems = [{text:'Profile', path:'profile'}, {text:'My Account', path:'account'}, {text:'Logout',path:'/'}];
+import useLogout from '../hooks/useLogout';
+const navItems = [{ text: 'Home', path: '/', icon: <HouseOutlinedIcon /> },
+{ text: 'Training Plan', path: 'plan', icon: <MenuBookOutlinedIcon /> },
+{ text: 'Contingency', path: 'contingency', icon: <AttachMoneyOutlinedIcon /> },
+{ text: 'About', path: 'about', icon: <InfoOutlinedIcon /> },
+{ text: 'Contact', path: 'contact', icon: <MailOutlinedIcon /> },
+{ text: 'Admin', path: 'users', icon: <InfoOutlinedIcon /> }];
+const accountItems = [{ text: 'Profile', path: 'profile' }, { text: 'My Account', path: 'account' }, { text: 'Logout', path: 'login' }];
 const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#FA7070",
-        contrastText: "#FFFFFF",
-      },
+  palette: {
+    primary: {
+      main: "#FA7070",
+      contrastText: "#FFFFFF",
     },
-  });
+  },
+});
 
 
 function TopBar() {
 
-    const [mobileOpen, setMobileOpen] = React.useState(false);
-    const [accountOpen, setAccountOpen] = React.useState(false);
-    const [menuPos, setMenuPos] = React.useState(null);
-    document.body.style = 'background-image: #FFFFFF;'
-    const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen);
-      };
-    const handleAccountToggle = (e) => {
-      setAccountOpen(!accountOpen);
-      setMenuPos(e.currentTarget);
-    };
-    
-      const drawer = (
-        <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-          <Typography variant="h6" sx={{ my: 2 }}>
-            Train
-          </Typography>
-          <Divider />
-          <List>
-            {navItems.map((item) => (
-              <ListItem key={item} disablePadding>
-                <ListItemButton component={Link} to={item.path}>
-                  {item.icon}
-                  <ListItemText primary={item.text} sx={{paddingLeft:'5%'}}/>
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      );
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [accountOpen, setAccountOpen] = React.useState(false);
+  const [menuPos, setMenuPos] = React.useState(null);
+  const logout = useLogout();
+  const navigate = useNavigate();
+  const signOut = async () => {
+    await logout();
+    navigate('/login')
 
-      const menu = (
-      <Box>
-        <List>
-          {accountItems.map((item) => (
-            <ListItem key={item} disablePadding>
-              <ListItemButton component={Link} to ={item.path}>
-                <ListItemText primary={item.text}/>
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Box>
-      );
+  };
+  document.body.style = 'background-image: #FFFFFF;'
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+  const handleAccountToggle = (e) => {
+    setAccountOpen(!accountOpen);
+    setMenuPos(e.currentTarget);
+  };
+
+  const drawer = (
+    <Box onClick={handleDrawerToggle} sx={{ textalign: 'center' }}>
+      <Typography variant="h6" sx={{ my: 2 , textAlign: 'center'}}>
+        Train
+      </Typography>
+      <Divider />
+      <List>
+        {navItems.map((item) => (
+          <ListItem key={item.text} disablePadding>
+            <ListItemButton component={Link} to={item.path}>
+              {item.icon}
+              <ListItemText primary={item.text} sx={{ paddingLeft: '5%' }} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
+
+  const menu = (
+    <Box>
+      <List>
+        {accountItems.map((item) => (
+          <ListItem key={item.text} disablePadding>
+            {item.text === 'Logout' ?
+              <ListItemButton onClick={signOut}>
+                <ListItemText primary={item.text} />
+              </ListItemButton> :
+              <ListItemButton component={Link} to={item.path}>
+              <ListItemText primary={item.text} />
+            </ListItemButton>
+            }
+
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
 
 
-    return (
+  return (
     <ThemeProvider theme={theme}>
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <AppBar position="sticky" >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="menu"
-            edge="start"
-            onClick={handleDrawerToggle}
-          >
-            <MenuIcon/>
-          </IconButton>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' },paddingLeft:'2%' }}
-          >
-            Train
-          </Typography>
-          <IconButton
-          color="inherit"
-          aria-label="account-menu"
-          edge="start"
-          onClick={handleAccountToggle}
-          textAlign="right">
-            <Avatar/>
-          </IconButton>
-        </Toolbar>
-      </AppBar>
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        <AppBar position="sticky" >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="menu"
+              edge="start"
+              onClick={handleDrawerToggle}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' }, paddingLeft: '2%'}}
+            >
+              Train
+            </Typography>
+            <IconButton
+              color="inherit"
+              aria-label="account-menu"
+              edge="start"
+              onClick={handleAccountToggle}
+              textalign="right">
+              <Avatar />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
         <Drawer
           variant="temporary"
           open={mobileOpen}
@@ -125,15 +140,15 @@ function TopBar() {
           {drawer}
         </Drawer>
         <Menu
-        variant='temporary'
-        id="menu"
-        open={accountOpen}
-        onClose={handleAccountToggle}
-        anchorEl={menuPos}
-        anchorOrigin={{vertical:"bottom"}}>
+          variant='menu'
+          id="menu"
+          open={accountOpen}
+          onClose={handleAccountToggle}
+          anchorEl={menuPos}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
           {menu}
         </Menu>
-    </Box>
+      </Box>
     </ThemeProvider>
   );
 }

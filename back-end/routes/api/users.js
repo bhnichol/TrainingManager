@@ -5,8 +5,8 @@ const rolesList = require('../../config/rolesList')
 const verifyRoles = require('../../middleware/verifyRoles')
 
 router.route('/')
-      .get(verifyRoles(rolesList.Editor),userController.getAllUsers)
-      .delete(userController.deleteUser)
+      .get(verifyRoles(rolesList.Admin),userController.getAllUsers)
+      .delete(verifyRoles(rolesList.Admin),userController.deleteUser)
 
 
 module.exports = router;
