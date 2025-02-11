@@ -19,13 +19,21 @@ import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import MailOutlinedIcon from '@mui/icons-material/MailOutlined';
+import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
+import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
+import PeopleAlt from '@mui/icons-material/PeopleAlt';
+import BookOutlinedIcon from '@mui/icons-material/BookOutlined';
 import useLogout from '../hooks/useLogout';
 const navItems = [{ text: 'Home', path: '/', icon: <HouseOutlinedIcon /> },
 { text: 'Training Plan', path: 'plan', icon: <MenuBookOutlinedIcon /> },
 { text: 'Contingency', path: 'contingency', icon: <AttachMoneyOutlinedIcon /> },
+{ text: 'Courses', path: 'course', icon: <BookOutlinedIcon /> },
+{ text: 'Employees', path: 'employee', icon: <PeopleAlt /> },
+{ text: 'Organizations', path: 'org', icon: <AccountTreeOutlinedIcon /> },
+{ text: 'Admin', path: 'users', icon: <AdminPanelSettingsOutlinedIcon /> },
 { text: 'About', path: 'about', icon: <InfoOutlinedIcon /> },
-{ text: 'Contact', path: 'contact', icon: <MailOutlinedIcon /> },
-{ text: 'Admin', path: 'users', icon: <InfoOutlinedIcon /> }];
+{ text: 'Contact', path: 'contact', icon: <MailOutlinedIcon /> }
+];
 const accountItems = [{ text: 'Profile', path: 'profile' }, { text: 'My Account', path: 'account' }, { text: 'Logout', path: 'login' }];
 const theme = createTheme({
   palette: {

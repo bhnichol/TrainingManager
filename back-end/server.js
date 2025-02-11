@@ -35,7 +35,11 @@ app.use('/refresh', require('./routes/refresh'));
 app.use('/logout', require('./routes/logout'));
 
 app.use(verifyJWT);
+app.use('/org', require('./routes/api/org'));
 app.use('/users', require('./routes/api/users'));
+app.use('/employees', require('./routes/api/employees'));
+app.use('/courses', require('./routes/api/courses'));
+app.use('/plans', require('./routes/api/plans'));
 
 
 app.all('*', (req, res) => {

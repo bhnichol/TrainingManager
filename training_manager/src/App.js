@@ -17,6 +17,9 @@ import AdminUser from './screens/adminUser';
 import PersistLogin from './components/persistLogin';
 import MissingScreen from './screens/missingScreen';
 import UnauthorizedScreen from './screens/unauthorizedScreen';
+import EmployeeScreen from './screens/employeeScreen';
+import OrgScreen from './screens/orgScreen';
+import CourseScreen from './screens/courseScreen';
 function App() {
 
   return (
@@ -39,7 +42,10 @@ function App() {
               <Route path="contact" element={<ContactScreen />} />
               <Route path="account" element={<AccountScreen />} />
               <Route path="profile" element={<ProfileScreen />} />
+              <Route path="employee" element={<EmployeeScreen />} />
+              <Route path="course" element={<CourseScreen />} />
               <Route element={<RequireAuth allowedRoles={[3]} />}>
+                <Route path="org" element={<OrgScreen />} />
                 <Route path="users" element={<AdminUser />} />
               </Route>
             </Route>
