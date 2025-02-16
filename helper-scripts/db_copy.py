@@ -23,10 +23,22 @@ def get_table_data(connection, table_name):
     rows = cursor.fetchall()
     return columns, rows
 
+def convert_data(value):
+    if value is None:
+        return 'NULL'
+    elif isinstance(value, str):
+        return "'{}'".format(value.replace("'", "''"))
+    elif isinstance(value, (int, float)):
+        return str(value)
+    elif isinstance(value, oracledb.Date):
+        return f"TO_DATE('{value.strftime('%Y-%m-%d %H:%M:%S')}', 'YYYY-MM-DD HH24:MI:SS')"
+    else:
+        return 
+
 def generate_insert_statements(table_name, columns, rows):
     insert_statements = []
     for row in rows:
-        values = ', '.join(f"'{str(value)}'" for value in row)
+        values = ', '.join(convert_data(value) for value in row)
         insert_statement = f"INSERT INTO {table_name} ({', '.join(columns)}) VALUES ({values});"
         insert_statements.append(insert_statement)
     return insert_statements
@@ -53,3 +65,4 @@ service_name = 'XEPDB1'
 
 connection = get_connection(username, password, hostname, port, service_name)
 export_to_sql_file('exported_database.sql', connection)
+connection.close()
