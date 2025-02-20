@@ -40,6 +40,7 @@ app.use('/users', require('./routes/api/users'));
 app.use('/employees', require('./routes/api/employees'));
 app.use('/courses', require('./routes/api/courses'));
 app.use('/plans', require('./routes/api/plans'));
+app.use('/plancourse', require('./routes/api/planCourses'));
 
 
 app.all('*', (req, res) => {

@@ -1,4 +1,4 @@
-import { Box, Button, ThemeProvider, Dialog, DialogContent, Divider, FormControl, FormLabel, Grid2, InputLabel, MenuItem, TextField, Typography, TableContainer, Paper, ListItemButton, List, ListItem, ListItemText, ListItemIcon, Accordion, AccordionSummary, AccordionDetails, Stack, IconButton, AccordionActions } from "@mui/material";
+import { Box, Button, ThemeProvider, Dialog, DialogContent, Divider, FormControl, FormLabel, Grid2, InputLabel, MenuItem, TextField, Typography, TableContainer, Paper, ListItemButton, List, ListItem, ListItemText, ListItemIcon, Accordion, AccordionSummary, AccordionDetails, Stack, IconButton, AccordionActions, Icon, Card } from "@mui/material";
 import { AppTheme } from "../theme";
 import { useEffect, useRef, useState } from "react";
 import API_URL from "../api/api";
@@ -16,11 +16,11 @@ const RightListCourse = ({ itemCourses, rightCourses, handleCourseChange, setRig
 
   return (
     <>
-      <Paper sx={{ maxHeight: 300, minHeight: 300, overflow: 'auto' }} >
+      <Paper sx={{ maxHeight: '49vh', minHeight: '49vh', overflow: 'auto' }} >
         {
           itemCourses.map((course) => {
             return (
-              <Accordion fullWidth divider key={course.id} justifyContent='space-between' expanded={course.expand} onChange={(e) => handleCourseChange(e, course.id, 'expand')}>
+              <Accordion divider="true" key={course.id} expanded={course.expand} onChange={(e) => handleCourseChange(e, course.id, 'expand')}>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}>
                   <Typography> {course.TITLE} </Typography>
@@ -72,10 +72,10 @@ const RightListCourse = ({ itemCourses, rightCourses, handleCourseChange, setRig
                         />
                         <Grid2 sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                           <IconButton sx={{ display: 'flex', justifyContent: 'flex-end' }} key={course.COURSEID} value={course} onClick={() => {
-                             setRightCourses(rightCourses.filter((row) => row !== course));
-                            
-                          }} 
-                             children={<CancelOutlinedIcon color="error" />}/* transferLists(rightCourses, setRightCourses, leftCourses, setLeftCourses, course)} */ />
+                            setRightCourses(rightCourses.filter((row) => row !== course));
+
+                          }}
+                            children={<CancelOutlinedIcon color="error" />}/* transferLists(rightCourses, setRightCourses, leftCourses, setLeftCourses, course)} */ />
                         </Grid2>
                       </Grid2>
                     </Grid2>
@@ -90,20 +90,107 @@ const RightListCourse = ({ itemCourses, rightCourses, handleCourseChange, setRig
   )
 }
 
-const ReviewListEdit = (emp, handleReviewChange, courses) => {
+const ReviewListEdit = ({ emp, handleReviewChange, courses }) => {
   return (
     <List>
-        {emp.emp.COURSES.map((course) => {
-          return (
-            <ListItem key={course.COURSEID}>
-              <ListItemText primary={course.TITLE}/>
-              <TextField label={"Tuition"} value={course.TUITION} type="number" onChange={(e) => handleReviewChange(emp.emp.EMP.EMPID, e, course.COURSEID, 'tuition')}/>
-            </ListItem>
-          );
-        }
-        )
+      {/* Takes an employee which contains their courses and maps them to textfields to edit tuition, travel, and/or travel hours */}
+      {emp.COURSES.map((course) => {
+        return (
+          <ListItem key={course.COURSEID.toString() + emp.EMP.EMPID.toString() + 'List'}>
+            <ListItemText primary={course.TITLE} sx={{ width: '50%' }} />
+            <TextField sx={{ mr: '2%' }} label={"Course Hours"} value={course.COURSEHOURS} key={course.COURSEID.toString() + emp.EMP.EMPID.toString() + 'hours'} type="number" disabled />
+            <TextField sx={{ mr: '2%' }} label={"Tuition"} value={course.TUITION} key={course.COURSEID.toString() + emp.EMP.EMPID.toString() + 'tuition'} type="number" onChange={(e) => handleReviewChange(e, emp.EMP.EMPID, course.COURSEID, 'tuition')} />
+            <TextField sx={{ mr: '2%' }} label={"Travel Cost"} value={course.TRAVEL} key={course.COURSEID.toString() + emp.EMP.EMPID.toString() + 'travelCost'} type="number" onChange={(e) => handleReviewChange(e, emp.EMP.EMPID, course.COURSEID, 'travel')} />
+            <TextField sx={{ mr: '2%' }} label={"Travel Hours"} value={course.TRAVELHOURS} key={course.COURSEID.toString() + emp.EMP.EMPID.toString() + 'travelHours'} type="number" onChange={(e) => handleReviewChange(e, emp.EMP.EMPID, course.COURSEID, 'travelHours')} />
+            {/* Button to delete a course for a specific employee*/}
+            <IconButton children={<CancelOutlinedIcon color="error" />} onClick={(e) => { handleReviewChange(e, emp.EMP.EMPID, course.COURSEID, 'deletion') }} />
+          </ListItem>
+        );
       }
-      </List>
+      )
+      }
+    </List>
+  )
+}
+
+const AddReviewList = ({ reviewList, handleReviewChange, courses, valueFormatter, allEmps }) => {
+  const [addEmp, setAddEmp] = useState(false);
+  const [empToAdd, setEmpToAdd] = useState({ "F_NAME": "", "L_NAME": "" });
+  const [addCourse, setAddCourse] = useState(false);
+  const [courseToAdd, setCourseToAdd] = useState({ "TITLE": "" });
+  return (
+    <Paper sx={{ maxHeight: '49vh', minHeight: '49vh', overflow: 'auto' }} >
+      {
+        /* Takes reviewList which is all employees and related courses and maps each employee to an accordion*/
+        reviewList.map(item => {
+          return (
+            <Accordion key={item.EMP.EMPID} sx={{ mb: '5px', mr: '2px', ml: '2px' }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: "primary.contrastText" }} />} sx={{ backgroundColor: "primary.main" }}>
+                <Typography variant="body1" sx={{ width: '53%', color: "primary.contrastText" }}> {item.EMP.F_NAME + ' ' + item.EMP.L_NAME + ' (' + valueFormatter.format(item.EMP.EFFECTIVE_PAY) + ' /hr)'} </Typography>
+                <Typography variant="body1" sx={{ width: '20%', color: "primary.contrastText", display:'flex'}}> Labor: 
+                  <Typography variant="body1" sx={{display: 'flex', justifyContent: 'flex-end', paddingRight: '5%', color: "primary.contrastText" , ml:'8px'  }}>{valueFormatter.format(item.COURSES.reduce((accumulator, course) => accumulator + (course.TRAVELHOURS || 0) + (course.COURSEHOURS || 0), 0) * item.EMP.EFFECTIVE_PAY)}</Typography>
+                </Typography>
+                <Typography variant="body1" sx={{ width: '20%', color: "primary.contrastText", display:'flex' }}> Non-Labor: 
+                  <Typography variant="body1" sx={{display: 'flex', justifyContent: 'flex-end', color: "primary.contrastText", ml:'8px' }}>{valueFormatter.format(item.COURSES.reduce((accumulator, course) => accumulator + (course.TUITION || 0) + (course.TRAVEL || 0), 0))}</Typography>
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                {/* Takes the employee course array and maps it to a list where each value can be edited*/}
+                <ReviewListEdit key={item.EMP.EMPID} courses={courses} emp={item} handleReviewChange={handleReviewChange} />
+
+                {addCourse ?
+                  <Card sx={{ pt: '10px', display: 'flex', justifyContent: 'space-between', mb: '1%' }}>
+                    <TextField label="Course" size="small" variant="outlined" select sx={{ width: '40%', ml: '1%', pb: '1%', mb: '1%' }} value={courseToAdd.TITLE}>
+                      {
+                        courses.map((course) => {
+                          return <MenuItem key={course.TITLE} onClick={() => setCourseToAdd(course)} value={course.TITLE}>{course.TITLE}</MenuItem>
+                        })
+                      }
+                    </TextField>
+                    <Grid2 display='flex' flexDirection='row' sx={{
+                      width: '20%', pb: '1.5%', pr: '1%'
+                    }}>
+                      <Button variant="contained" color="error" size="small" sx={{ mr: '5%' }} onClick={() => { setAddCourse(false); setCourseToAdd({ "TITLE": "" }) }}>Cancel</Button>
+                      <Button variant="contained" color="success" size="small" onClick={(e) => { setAddCourse(false); handleReviewChange(e, item.EMP.EMPID, courseToAdd.COURSEID, "addition"); setCourseToAdd({ "TITLE": "" }) }}>Add</Button>
+                    </Grid2>
+                  </Card>
+                  : <></>}
+                <Grid2 container flexDirection={"row"} justifyContent={"flex-end"} display={"flex"}>
+                  {addCourse ?
+                    <></>
+                    :
+                    <Button color="success" variant="outlined" sx={{ justifySelf: 'flex-end', display: 'flex', mr: "25px" }} onClick={(e) => setAddCourse(true)}>Add Course</Button>
+                  }
+
+                  <Button color="error" variant="outlined" sx={{ justifySelf: 'flex-end', display: 'flex' }} onClick={(e) => { handleReviewChange(e, item.EMP.EMPID, "", "empDelete") }}>Remove Employee</Button>
+                </Grid2>
+              </AccordionDetails>
+            </Accordion>
+          )
+        })
+      }
+      {/* Add Employee Button on Review State of plan creation*/}
+      {addEmp ?
+        <Card sx={{ pt: '10px', display: 'flex', justifyContent: 'space-between' }}>
+          <TextField label="Employee" size="small" variant="outlined" select sx={{ width: '40%', ml: '1%', pb: '1%', mb: '1%' }} value={empToAdd.F_NAME + ' ' + empToAdd.L_NAME}>
+            {
+              allEmps.map((emp) => {
+                return <MenuItem key={emp.EMPID} onClick={() => setEmpToAdd(emp)} value={emp.F_NAME + ' ' + emp.L_NAME}>{emp.F_NAME + ' ' + emp.L_NAME}</MenuItem>
+              })
+            }
+          </TextField>
+          <Grid2 display='flex' flexDirection='row' sx={{
+            width: '20%', pb: '1.5%', pr: '1%'
+          }}>
+            <Button variant="contained" color="error" size="small" sx={{ mr: '5%' }} onClick={() => { setAddEmp(false); setEmpToAdd({ "F_NAME": "", "L_NAME": "" }) }}>Cancel</Button>
+            <Button variant="contained" color="success" size="small" onClick={(e) => { setAddEmp(false); handleReviewChange(e, empToAdd.EMPID, "", "empAdd"); setEmpToAdd({ "F_NAME": "", "L_NAME": "" }) }}>Add</Button>
+          </Grid2>
+        </Card>
+        : allEmps.length > 0 ?
+          <Button variant="contained" sx={{ color: 'white', borderWidth: 3, justifySelf: 'center', display: 'flex', mt: '2%', mb: '1%' }} onClick={(e) => setAddEmp(true)}> <AddBoxOutlinedIcon sx={{ paddingRight: '5%' }} /> Employee</Button>
+          : <></>
+      }
+    </Paper>
   )
 }
 
@@ -133,11 +220,13 @@ const PlanScreen = () => {
   const [planEditState, setPlanEditState] = useState('employee');
   const [empSuccess, setEmpSuccess] = useState(false);
   const [courseSuccess, setCourseSuccess] = useState(false);
+  const [totalLabor, setTotalLabor] = useState(0);
+  const [totalNonLabor, setTotalNonLabor] = useState(0);
 
   const columns = [
     { field: 'EMP_NAME', headerName: 'Employee', flex: 0.35 },
     {
-      field: 'COURSE_TITLE',
+      field: 'TITLE',
       headerName: 'Course Title',
       flex: 0.3
     },
@@ -189,6 +278,12 @@ const PlanScreen = () => {
     },
   ];
 
+  const valueFormatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+  });
+
   const confirmDelete = (planCourse) => {
     setConfirmDeleteVis(true);
     setPlanCourseToDelete(planCourse);
@@ -203,26 +298,64 @@ const PlanScreen = () => {
     let tableContext = rightCourses;
     const myRowIndex = tableContext.findIndex((row) => row.id === id);
 
-    if (f === "tuition") { updateRow = { ...tableContext[myRowIndex], TUITION: e.target.value }; }
-    else if (f === "travel") updateRow = { ...tableContext[myRowIndex], TRAVEL: e.target.value };
-    else if (f === "courseHours") updateRow = { ...tableContext[myRowIndex], COURSEHOURS: e.target.value };
-    else if (f === "travelHours") updateRow = { ...tableContext[myRowIndex], TRAVELHOURS: e.target.value };
+    if (f === "tuition") { updateRow = { ...tableContext[myRowIndex], TUITION: parseFloat(e.target.value) }; }
+    else if (f === "travel") updateRow = { ...tableContext[myRowIndex], TRAVEL: parseFloat(e.target.value) };
+    else if (f === "courseHours") updateRow = { ...tableContext[myRowIndex], COURSEHOURS: parseFloat(e.target.value) };
+    else if (f === "travelHours") updateRow = { ...tableContext[myRowIndex], TRAVELHOURS: parseFloat(e.target.value) };
     else if (f === "expand") updateRow = { ...tableContext[myRowIndex], expand: !tableContext[myRowIndex].expand };
     tableContext = [...rightCourses.filter((row) => row.id != id), updateRow]
+    console.log(tableContext);
     setRightCourses(tableContext.sort(function (a, b) { return a.id - b.id }));
   }
 
   const handleReviewChange = (e, empid, id, f) => {
-    let updateRow = {};
-    let tableContext = plan_Course_New;
-    const myRowIndex = tableContext.findIndex((row) => row.EMPID === empid);
+    if (f === "empAdd") {
+      // adding an employee
+      let empToAdd = emps[emps.findIndex(emp => emp.EMPID === empid)];
+      transferLists(leftEmps, setLeftEmps, rightEmps, setRightEmps, empToAdd);
+      setPlan_Course_New(prevState => [
+        ...prevState,
+        {
+          "PLAN_ID": selectPlan.PLAN_ID,
+          "EMP": empToAdd, // or a new unique EMPID if needed
+          "COURSES": rightCourses // initialize with an empty array
+        }
+      ]);
+    }
+    else if (f === "empDelete") {
+      let empToDelete = emps[emps.findIndex(emp => emp.EMPID === empid)];
+      transferLists(rightEmps, setRightEmps, leftEmps, setLeftEmps, empToDelete)
+      setPlan_Course_New(plan_Course_New.filter(item => item.EMP.EMPID !== empid));
 
-    if (f === "tuition") { updateRow = { ...tableContext[myRowIndex], TUITION: e.target.value }; }
-    else if (f === "travel") updateRow = { ...tableContext[myRowIndex], TRAVEL: e.target.value };
-    else if (f === "courseHours") updateRow = { ...tableContext[myRowIndex], COURSEHOURS: e.target.value };
-    else if (f === "travelHours") updateRow = { ...tableContext[myRowIndex], TRAVELHOURS: e.target.value };
-    else if (f === "expand") updateRow = { ...tableContext[myRowIndex], expand: !tableContext[myRowIndex].expand };
-    setRightCourses(tableContext.sort(function (a, b) { return a.id - b.id }));
+    }
+    else {
+      setPlan_Course_New(prevState => prevState.map(emp => {
+        if (emp.EMP.EMPID === empid) {
+          if (f === "deletion") {
+            // Remove the course from the COURSES array
+            const updatedCourses = emp.COURSES.filter(course => course.COURSEID !== id);
+            return { ...emp, COURSES: updatedCourses };
+          }
+          else if (f === "addition") {
+            const updatedCourses = [...emp.COURSES, courses[courses.findIndex(course => course.COURSEID === id)]]
+            console.log(updatedCourses);
+            return { ...emp, COURSES: updatedCourses };
+          }
+          else {
+            // Update the course field
+            const updatedCourses = emp.COURSES.map(course => {
+              if (course.COURSEID === id) {
+                return { ...course, [f.toUpperCase()]: parseFloat(e.target.value) };
+              }
+              return course;
+            });
+            return { ...emp, COURSES: updatedCourses };
+          }
+        }
+        return emp;
+      }
+      ))
+    }
   }
 
   const ValidateInputs = () => {
@@ -301,7 +434,7 @@ const PlanScreen = () => {
     }
     else if (planEditState === 'courses') {
       setPlan_Course_New(rightEmps.map((emp) => {
-        return ({ 'PLAN_ID': selectPlan.PLAN_ID, 'EMP': emp, 'COURSES': rightCourses})
+        return ({ 'PLAN_ID': selectPlan.PLAN_ID, 'EMP': emp, 'COURSES': rightCourses })
       }));
       setPlanEditState('review');
       console.log(plan_Course_New);
@@ -313,12 +446,14 @@ const PlanScreen = () => {
     setPlanCourseErrMsg('');
     try {
       const response = await axiosPrivate.post(API_URL.PLAN_COURSE_URL,
-        JSON.stringify({ plan_course: plan_Course_New })
+        JSON.stringify({ plans: plan_Course_New })
       )
       console.log(JSON.stringify(response))
       setAddPlanCourses(false);
       setSuccessPlanCourses(true);
       setPlan_Course_New([]);
+      setLeftCourses(courses);
+      setRightCourses([]);
       setPlanEditState('employee')
       setRightEmps([]);
       setLeftEmps(emps);
@@ -345,7 +480,7 @@ const PlanScreen = () => {
 
   const LeftListEmp = ({ itemEmps }) => {
     return (
-      <Paper sx={{ maxHeight: 300, minHeight: 300, overflow: 'auto' }} >
+      <Paper sx={{ maxHeight: '49vh', minHeight: '49vh', overflow: 'auto' }} >
         <List>
           {
             itemEmps.map((emp) => {
@@ -359,12 +494,12 @@ const PlanScreen = () => {
 
   const RightListEmp = ({ itemEmps }) => {
     return (
-      <Paper sx={{ maxHeight: 300, minHeight: 300, overflow: 'auto' }} >
+      <Paper sx={{ maxHeight: '49vh', minHeight: '49vh', overflow: 'auto' }} >
         <List>
           {
             itemEmps.map((emp) => {
               return (
-                <ListItem fullWidth divider key={emp.EMPID} justifyContent='space-between'>
+                <ListItem divider key={emp.EMPID}>
                   <ListItemText primary={emp.F_NAME + ' ' + emp.L_NAME} sx={{ width: '60%' }} />
                   <ListItemButton sx={{ display: 'flex', justifyContent: 'flex-end', width: '15%' }} key={emp.EMPID} value={emp} onClick={() => transferLists(rightEmps, setRightEmps, leftEmps, setLeftEmps, emp)}>
                     <ListItemIcon sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }} color="error" children={<CancelOutlinedIcon color="error" />} />
@@ -380,23 +515,23 @@ const PlanScreen = () => {
 
   const LeftListCourse = ({ itemCourses }) => {
     return (
-      <Paper sx={{ maxHeight: 300, minHeight: 300, overflow: 'auto' }} >
+      <Paper sx={{ maxHeight: '49vh', minHeight: '49vh', overflow: 'auto' }} >
         <List>
           {
             itemCourses.map((course) => {
-              if (!rightCourses.some(row => row.COURSEID === course.COURSEID)){
-              return <ListItem divider key={course.COURSEID}><ListItemButton key={course.COURSEID} value={course} onClick={() => {
-                setRightCourses([...rightCourses, {
-                  ...course, expand: false, id: rightCourses.length > 0 ? rightCourses.reduce(function (prev, current) {
-                    return (prev && prev.id > current.id) ? prev : current
-                  }).id + 1 : 1
-                }])
+              if (!rightCourses.some(row => row.COURSEID === course.COURSEID)) {
+                return <ListItem divider key={course.COURSEID}><ListItemButton key={course.COURSEID} value={course} onClick={() => {
+                  setRightCourses([...rightCourses, {
+                    ...course, expand: false, id: rightCourses.length > 0 ? rightCourses.reduce(function (prev, current) {
+                      return (prev && prev.id > current.id) ? prev : current
+                    }).id + 1 : 1
+                  }])
+                }
+
+                }><ListItemText primary={course.TITLE} /></ListItemButton></ListItem>
               }
-              
-              }><ListItemText primary={course.TITLE} /></ListItemButton></ListItem>
-            }
             })
-          
+
           }
         </List>
       </Paper>
@@ -405,42 +540,21 @@ const PlanScreen = () => {
 
 
 
-  const AddReviewList = ({ reviewList }) => {
-    return (
-      <Paper sx={{ maxHeight: 300, minHeight: 300, overflow: 'auto' }} >
-        {
-          reviewList.map(item => {
-            return (
-              <Accordion key={item.EMP.EMPID}>
-                <AccordionSummary justifyContent={'flex'}
-                  expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="body1" sx={{width: '43%'}}> {item.EMP.F_NAME + ' ' + item.EMP.L_NAME} </Typography>
-                  <Typography variant="body1" sx={{width: '13%'}}> Labor:  </Typography>
-                  <Typography variant="body1" sx={{width: '10%', display:'flex', justifyContent:'flex-end', paddingRight:'5%'}}>${(item.COURSES.reduce((accumulator, course) => accumulator + course.TRAVELHOURS + course.COURSEHOURS, 0) * item.EMP.EFFECTIVE_PAY).toFixed(2)}</Typography>
-                  <Typography variant="body1" sx={{width: '13%'}}> Non-Labor:  </Typography>
-                  <Typography variant="body1" sx={{width: '10%', display:'flex', justifyContent:'flex-end'}}>${item.COURSES.reduce((accumulator, course) => accumulator + course.TUITION + course.TRAVEL, 0).toFixed(2)}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  {/* <List sx={{ paddingTop: 0 }}>
-                    {
-                      item.COURSES.map(course => {
-                        return (
-                          <ListItem divider key={course.COURSEID}><ListItemText primary={course.TITLE} /></ListItem>
-                        )
-                      })
 
-                    }
-                  </List> */}
-                  <ReviewListEdit courses={courses} emp={item} handleReviewChange={handleReviewChange}/>
-                </AccordionDetails>
-              </Accordion>
-            )
-          })
-        }
-      </Paper>
-    )
-  }
 
+
+  useEffect(() => {
+    setTotalLabor(valueFormatter.format(
+      plan_Course_New.map(item => {
+        return (item.COURSES.reduce((accumulator, course) => accumulator + (course.TRAVELHOURS || 0) + (course.COURSEHOURS || 0), 0) * item.EMP.EFFECTIVE_PAY);
+      }).reduce((accumulator, emp) => accumulator + emp, 0)
+    ))
+    setTotalNonLabor(valueFormatter.format(
+      plan_Course_New.map(item => {
+        return (item.COURSES.reduce((accumulator, course) => accumulator + (course.TUITION || 0) + (course.TRAVEL || 0), 0));
+      }).reduce((accumulator, emp) => accumulator + emp, 0)
+    ))
+  }, [plan_Course_New])
 
 
   useEffect(() => {
@@ -501,9 +615,8 @@ const PlanScreen = () => {
           signal: controller.signal
         });
         isMounted && setCourses(response.data);
-
+        setLeftCourses(response.data);
         setRightCourses([])
-        console.log(JSON.stringify(courses));
       } catch (err) {
         console.error(err);
       }
@@ -514,10 +627,9 @@ const PlanScreen = () => {
     return () => {
       isMounted = false;
       controller.abort();
-      setLeftCourses(courses);
       setCourseSuccess(false);
     }
-  }, [courseSuccess])
+  }, [])
 
   useEffect(() => {
     let isMounted = true;
@@ -530,8 +642,8 @@ const PlanScreen = () => {
         });
         isMounted && setEmps(response.data);
 
+        setLeftEmps(response.data);
         setRightEmps([]);
-        console.log(JSON.stringify(leftEmps));
       } catch (err) {
         console.error(err);
       }
@@ -542,10 +654,9 @@ const PlanScreen = () => {
     return () => {
       isMounted = false;
       controller.abort();
-      setLeftEmps(emps);
       setEmpSuccess(false);
     }
-  }, [empSuccess])
+  }, [])
 
   return (
     <ThemeProvider theme={AppTheme}>
@@ -586,13 +697,15 @@ const PlanScreen = () => {
         </Box>
 
         {/* Modal for adding Courses to a plan */}
-        <Dialog fullWidth maxWidth='md' open={addPlanCourses} onClose={() => setAddPlanCourses(false)}>
-          <DialogContent>
+        <Dialog fullWidth maxWidth='lg' open={addPlanCourses} onClose={() => setAddPlanCourses(false)}>
+          <DialogContent sx={{ minHeight: '65vh', maxHeight: '65vh' }}>
             {planCourseErrMsg ? <Typography color="error">{planCourseErrMsg}</Typography> : <></>}
+
+            {/*Employee selection state */}
             {planEditState === 'employee' ?
               <>
                 <Typography fontStyle={'h1'} paddingBottom={'2%'}>Adding Employees to: {selectPlan.TITLE}</Typography>
-                <Grid2 container justifyContent="space-between" paddingTop={'2%'}>
+                <Grid2 container justifyContent="space-between" display={"flex"}>
                   <Grid2 width={'40%'}>
                     <LeftListEmp itemEmps={leftEmps}></LeftListEmp>
                   </Grid2>
@@ -609,8 +722,9 @@ const PlanScreen = () => {
                 </Grid2>
               </>
               : planEditState === 'courses' ? <>
+                {/*Course selection state */}
                 <Typography fontStyle={'h1'} paddingBottom={'2%'}>Adding Courses to: {selectPlan.TITLE}</Typography>
-                <Grid2 container justifyContent="space-between" paddingTop={'2%'}>
+                <Grid2 container justifyContent="space-between">
                   <Grid2 width={'40%'}>
                     <LeftListCourse itemCourses={leftCourses}></LeftListCourse>
                   </Grid2>
@@ -627,11 +741,22 @@ const PlanScreen = () => {
                 </Grid2>
               </> :
                 <>
+                  {/*Review state */}
                   <Typography fontStyle={'h1'} paddingBottom={'2%'}>Reviewing Plan: {selectPlan.TITLE}</Typography>
-                  <AddReviewList reviewList={plan_Course_New}></AddReviewList>
-                  <Grid2 container justifyContent="flex-end" paddingTop={'2%'}>
-                    <Button variant="contained" color="error" size="small" sx={{ mr: '2%' }} onClick={() => onClosePlanCourse()}>Cancel</Button>
-                    <Button variant="contained" color="success" size="small" onClick={() => console.log(plan_Course_New)}>Review</Button>
+                  <AddReviewList reviewList={plan_Course_New} handleReviewChange={handleReviewChange} courses={courses} valueFormatter={valueFormatter} allEmps={leftEmps} />
+                  <Grid2 flexDirection="row" display='flex' justifyContent='space-between' sx={{ paddingTop: '2%' }}>
+                    <Grid2 display='flex' flexDirection={"row"} width={'70%'}>
+                      <Paper elevation={3} sx={{ marginRight: '5%', paddingLeft: '2%', paddingRight: '2%', backgroundColor: 'white', justifyContent: 'center', flexDirection: 'column', display: 'flex' }}>
+                        <Typography >Total Labor: {totalLabor} </Typography>
+                      </Paper>
+                      <Paper elevation={3} sx={{ marginRight: '5%', paddingLeft: '2%', paddingRight: '2%', backgroundColor: 'white', justifyContent: 'center', flexDirection: 'column', display: 'flex' }}>
+                        <Typography>Total Non-Labor: {totalNonLabor} </Typography>
+                      </Paper>
+                    </Grid2>
+                    <Grid2 width={'19%'} display='flex' flexDirection='row' justifyContent='space-between' >
+                      <Button variant="contained" color="error" size="small" sx={{ mr: '2%' }} onClick={() => onClosePlanCourse()}>Cancel</Button>
+                      <Button variant="contained" color="success" size="small" onClick={() => onSubmitPlanCourse()}>Submit</Button>
+                    </Grid2>
                   </Grid2>
                 </>
             }
