@@ -54,17 +54,18 @@ const createPlanCourses = async (req, res) => {
 }
 
 const deletePlanCourse = async (req, res) => {
-    if (!req?.body?.org_code) return res.status(400).json({ "message": 'Org Code required' });
+    if (!req?.body?.plan_course_id) return res.status(400).json({ "message": 'plan course id required' });
     const timestamp = new Date();
     try {
         const conn = await oracledb.getConnection(dbConn);
-        const results = await conn.execute('UPDATE trainingapp.organizations SET INACTIVE_IND = 1, DELETE_DATE = :DELETE_DATE WHERE ORG_CODE = :ORG_CODE', [timestamp, req.body.org_code],{autoCommit: true});
+        const results = await conn.execute('UPDATE trainingapp.plan_courses SET INACTIVE_IND = 1, DELETE_DATE = :DELETE_DATE WHERE PLAN_COURSE_ID = :PLAN_COURSE_ID', [timestamp, req.body.plan_course_id],{autoCommit: true});
         res.json(results)
         if(conn){
-            conn.close()
+            conn.close();
         }
     } catch (err) {
-        res.send(err)
+        console.log(err);
+        res.send(err);
     }
 }
 

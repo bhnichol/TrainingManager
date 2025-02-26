@@ -26,13 +26,12 @@ import BookOutlinedIcon from '@mui/icons-material/BookOutlined';
 import useLogout from '../hooks/useLogout';
 const navItems = [{ text: 'Home', path: '/', icon: <HouseOutlinedIcon /> },
 { text: 'Training Plan', path: 'plan', icon: <MenuBookOutlinedIcon /> },
-{ text: 'Contingency', path: 'contingency', icon: <AttachMoneyOutlinedIcon /> },
+// { text: 'Contingency', path: 'contingency', icon: <AttachMoneyOutlinedIcon /> },
 { text: 'Courses', path: 'course', icon: <BookOutlinedIcon /> },
 { text: 'Employees', path: 'employee', icon: <PeopleAlt /> },
 { text: 'Organizations', path: 'org', icon: <AccountTreeOutlinedIcon /> },
 { text: 'Admin', path: 'users', icon: <AdminPanelSettingsOutlinedIcon /> },
-{ text: 'About', path: 'about', icon: <InfoOutlinedIcon /> },
-{ text: 'Contact', path: 'contact', icon: <MailOutlinedIcon /> }
+{ text: 'About/Contact', path: 'about', icon: <InfoOutlinedIcon /> }
 ];
 const accountItems = [{ text: 'Profile', path: 'profile' }, { text: 'My Account', path: 'account' }, { text: 'Logout', path: 'login' }];
 const theme = createTheme({

@@ -272,7 +272,7 @@ const PlanScreen = () => {
       renderCell: (params) => {
 
         return (
-          <Button onClick={() => confirmDelete(params.row.PLAN_COURSE_ID, params.row.COURSEID)}><DeleteOutlineOutlinedIcon color="error" /></Button>
+          <Button onClick={() => confirmDelete(params.row.PLAN_COURSE_ID, params.row.TITLE, params.row.EMP_NAME)}><DeleteOutlineOutlinedIcon color="error" /></Button>
         )
       }
     },
@@ -284,9 +284,9 @@ const PlanScreen = () => {
     minimumFractionDigits: 2,
   });
 
-  const confirmDelete = (planCourse) => {
+  const confirmDelete = (planCourse, courseTitle, empName) => {
     setConfirmDeleteVis(true);
-    setPlanCourseToDelete(planCourse);
+    setPlanCourseToDelete({ID: planCourse, TITLE: courseTitle, EMP_NAME: empName});
   }
 
   function getRowId(row) {
@@ -303,7 +303,7 @@ const PlanScreen = () => {
     else if (f === "courseHours") updateRow = { ...tableContext[myRowIndex], COURSEHOURS: parseFloat(e.target.value) };
     else if (f === "travelHours") updateRow = { ...tableContext[myRowIndex], TRAVELHOURS: parseFloat(e.target.value) };
     else if (f === "expand") updateRow = { ...tableContext[myRowIndex], expand: !tableContext[myRowIndex].expand };
-    tableContext = [...rightCourses.filter((row) => row.id != id), updateRow]
+    tableContext = [...rightCourses.filter((row) => row.id !== id), updateRow];
     console.log(tableContext);
     setRightCourses(tableContext.sort(function (a, b) { return a.id - b.id }));
   }
@@ -408,7 +408,6 @@ const PlanScreen = () => {
       const response = await axiosPrivate.post(API_URL.PLAN_URL,
         JSON.stringify({ plan_title, plan_FY })
       )
-      console.log(JSON.stringify(response))
       setAddPlan(false);
       setSuccess(true);
       setPlan_Title('');
@@ -424,10 +423,38 @@ const PlanScreen = () => {
         setPlanErrMsg('Unauthorized Access');
       }
       else {
-        setPlanErrMsg('Plan failed to be created.')
+        setPlanErrMsg('Plan failed to be created.');
       }
     }
   }
+
+  const deletePlanCourse = async () => {
+    setConfirmDeleteErr('');
+    try {
+      const response = await axiosPrivate.delete(API_URL.PLAN_COURSE_URL,
+        {
+          data: {
+            plan_course_id: planCourseToDelete.ID
+          }
+        }
+      )
+      console.log(JSON.stringify(response))
+      setConfirmDeleteVis(false);
+      setSuccessPlanCourses(true);
+      setPlanCourseToDelete('');
+    } catch (err) {
+      if (!err?.response) { setConfirmDeleteErr('No Server Response'); }
+      else if (err.response?.status === 400) {
+        setConfirmDeleteErr('Plan course id missing');
+      } else if (err.response?.status === 401) {
+        setConfirmDeleteErr('Unauthorized Access');
+      }
+      else {
+        setConfirmDeleteErr('Plan course failed to be deleted.');
+      }
+    }
+  }
+
   const onSubmitPlanCourseStep1 = async () => {
     if (planEditState === 'employee') {
       setPlanEditState('courses');
@@ -790,6 +817,20 @@ const PlanScreen = () => {
             </Grid2>
           </DialogContent>
 
+        </Dialog>
+
+        {/* Modal for plan course delete confirmation */}
+        <Dialog open={confirmDeleteVis} onClose={async () => { setConfirmDeleteVis(false); setPlanCourseToDelete(''); setConfirmDeleteErr(''); }}>
+          <DialogContent>
+            {confirmDeleteErr ? <Typography color="error">{confirmDeleteErr}</Typography> : <></>}
+            <Typography>
+              Are you sure you want to delete {planCourseToDelete.TITLE} from {planCourseToDelete.EMP_NAME}'s plan ?
+            </Typography>
+            <Grid2 container justifyContent="center" paddingTop={'2%'}>
+              <Button onClick={async () => { setConfirmDeleteVis(false); setPlanCourseToDelete(''); setConfirmDeleteErr(''); }} sx={{ mr: '2%' }} color="error" size="small" variant="contained">Cancel</Button>
+              <Button onClick={() => deletePlanCourse()} color="success" size="small" variant="contained">Confirm</Button>
+            </Grid2>
+          </DialogContent>
         </Dialog>
 
       </Box>

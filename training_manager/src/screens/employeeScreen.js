@@ -108,7 +108,6 @@ const EmployeeScreen = () => {
     getEmps();
 
     return () => {
-      console.log(orgs)
       isMounted = false;
       controller.abort();
       setSuccess(false);
@@ -181,12 +180,12 @@ const EmployeeScreen = () => {
     } catch (err) {
       if (!err?.response) { setConfirmDeleteErr('No Server Response') }
       else if (err.response?.status === 400) {
-        setConfirmDeleteErr('Org code missing');
+        setConfirmDeleteErr('Emp id missing');
       } else if (err.response?.status === 401) {
         setConfirmDeleteErr('Unauthorized Access');
       }
       else {
-        setConfirmDeleteErr('Organization failed to be created.')
+        setConfirmDeleteErr('Employee failed to be deleted.');
       }
     }
   }

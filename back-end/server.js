@@ -41,6 +41,8 @@ app.use('/employees', require('./routes/api/employees'));
 app.use('/courses', require('./routes/api/courses'));
 app.use('/plans', require('./routes/api/plans'));
 app.use('/plancourse', require('./routes/api/planCourses'));
+app.use('/status', require('./routes/api/status'));
+app.use('/roles', require('./routes/api/roles'));
 
 
 app.all('*', (req, res) => {
