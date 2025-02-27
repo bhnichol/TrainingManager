@@ -159,10 +159,28 @@ Install the latest version of npm
 ## Usage
 
 Here are some screenshots of the application in use:
+The login page.
+![Login](./sample-img/LOGIN.PNG)
 
+The home screen which includes a status board.
+![Home](./sample-img/HOME.PNG)
 
+The course catalog.
+![Course Catalog](./sample-img/COURSE.PNG)
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+The organization table screen.
+![Orgs](./sample-img/ORGS.PNG)
+
+The Employee screen with the creation of employees.
+![Orgs](./sample-img/EMPLOYEE-CREATION.PNG)
+
+The process of adding courses to the training plan
+![Training Emp](./sample-img/TRAINING-EMP.PNG)
+![Training Course](./sample-img/TRAINING-COURSE.PNG)
+![Training Review](./sample-img/TRAINING-REVIEW.PNG)
+
+The admin screen.
+![Admin](./sample-img/ADMIN.PNG)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -183,6 +201,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
   - [ ] Disable statuses
   - [ ] choose custom colors for statuses   
 - [ ] Add info to about/contact screen
+- [ ] Create a logo
 
 
 
